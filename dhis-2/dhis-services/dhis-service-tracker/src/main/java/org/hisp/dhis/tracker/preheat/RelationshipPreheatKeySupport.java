@@ -38,7 +38,9 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hisp.dhis.common.BaseIdentifiableObject;
 import org.hisp.dhis.relationship.RelationshipItem;
-import org.hisp.dhis.relationship.RelationshipKey;
+import org.hisp.dhis.tracker.TrackerIdSchemeParam;
+import org.hisp.dhis.tracker.TrackerIdSchemeParams;
+import org.hisp.dhis.tracker.domain.MetadataIdentifier;
 import org.hisp.dhis.tracker.domain.Relationship;
 
 @NoArgsConstructor( access = AccessLevel.PRIVATE )
@@ -61,15 +63,16 @@ public class RelationshipPreheatKeySupport
             getRelationshipItemKey( relationship.getTo() ) );
     }
 
-    public static RelationshipKey getRelationshipKey( org.hisp.dhis.relationship.Relationship relationship )
+    public static RelationshipKey getRelationshipKey( TrackerIdSchemeParams idSchemeParams,
+        org.hisp.dhis.relationship.Relationship relationship )
     {
         return getRelationshipKey(
-            relationship.getRelationshipType().getUid(),
+            idSchemeParams.toMetadataIdentifier( relationship.getRelationshipType() ),
             getRelationshipItemKey( relationship.getFrom() ),
             getRelationshipItemKey( relationship.getTo() ) );
     }
 
-    private static RelationshipKey getRelationshipKey( String relationshipType,
+    private static RelationshipKey getRelationshipKey( MetadataIdentifier relationshipType,
         RelationshipKey.RelationshipItemKey from, RelationshipKey.RelationshipItemKey to )
     {
         return RelationshipKey.of( relationshipType, from, to );
@@ -108,11 +111,11 @@ public class RelationshipPreheatKeySupport
             : StringUtils.trimToEmpty( baseIdentifiableObject.getUid() );
     }
 
-    public static boolean isRelationshipPreheatKey( String s )
+    public static boolean isRelationshipPreheatKey( TrackerIdSchemeParam idSchemeParam, String s )
     {
         try
         {
-            RelationshipKey.fromString( s );
+            RelationshipKey.fromString( idSchemeParam, s );
             return true;
         }
         catch ( IllegalArgumentException e )

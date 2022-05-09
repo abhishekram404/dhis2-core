@@ -25,7 +25,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.hisp.dhis.relationship;
+package org.hisp.dhis.tracker.preheat;
 
 import static org.apache.commons.lang3.StringUtils.splitByWholeSeparatorPreserveAllTokens;
 
@@ -34,6 +34,8 @@ import lombok.Builder;
 import lombok.Data;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hisp.dhis.tracker.TrackerIdSchemeParam;
+import org.hisp.dhis.tracker.domain.MetadataIdentifier;
 
 @Data
 @Builder( toBuilder = true )
@@ -43,7 +45,7 @@ public class RelationshipKey
 
     private static final String RELATIONSHIP_KEY_SEPARATOR = "_";
 
-    private final String type;
+    private final MetadataIdentifier type;
 
     private final RelationshipItemKey from;
 
@@ -51,10 +53,11 @@ public class RelationshipKey
 
     public String asString()
     {
-        return String.join( RELATIONSHIP_KEY_SEPARATOR, type, from.asString(), to.asString() );
+        return String.join( RELATIONSHIP_KEY_SEPARATOR, type.getIdentifierOrAttributeValue(), from.asString(),
+            to.asString() );
     }
 
-    public static RelationshipKey fromString( String relationshipKeyAsString )
+    public static RelationshipKey fromString( TrackerIdSchemeParam idSchemeParam, String relationshipKeyAsString )
     {
         String[] splitKey = splitByWholeSeparatorPreserveAllTokens( relationshipKeyAsString,
             RELATIONSHIP_KEY_SEPARATOR );
@@ -64,7 +67,7 @@ public class RelationshipKey
                 "components in relationshipkey must be 7. Got " + relationshipKeyAsString + " instead" );
         }
         return RelationshipKey.builder()
-            .type( splitKey[0] )
+            .type( idSchemeParam.toMetadataIdentifier( splitKey[0] ) )
             .from( RelationshipItemKey.builder()
                 .trackedEntity( splitKey[1] )
                 .enrollment( splitKey[2] )

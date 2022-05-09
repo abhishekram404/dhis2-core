@@ -63,7 +63,6 @@ import org.hisp.dhis.program.ProgramInstance;
 import org.hisp.dhis.program.ProgramStage;
 import org.hisp.dhis.program.ProgramStageInstance;
 import org.hisp.dhis.relationship.Relationship;
-import org.hisp.dhis.relationship.RelationshipKey;
 import org.hisp.dhis.relationship.RelationshipType;
 import org.hisp.dhis.trackedentity.TrackedEntityAttribute;
 import org.hisp.dhis.trackedentity.TrackedEntityInstance;
@@ -641,6 +640,11 @@ public class TrackerPreheat
         return relationships.get( relationship.getUid() );
     }
 
+    public RelationshipType getRelationshipType( MetadataIdentifier id )
+    {
+        return get( RelationshipType.class, id );
+    }
+
     public boolean isDuplicate( org.hisp.dhis.tracker.domain.Relationship relationship )
     {
         RelationshipType relationshipType = get( RelationshipType.class, relationship.getRelationshipType() );
@@ -684,7 +688,7 @@ public class TrackerPreheat
     {
         if ( Objects.nonNull( relationship ) )
         {
-            RelationshipKey relationshipKey = getRelationshipKey( relationship );
+            RelationshipKey relationshipKey = getRelationshipKey( idSchemes, relationship );
 
             if ( relationship.getRelationshipType().isBidirectional() )
             {
