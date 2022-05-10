@@ -176,7 +176,7 @@ public class EventPersister extends AbstractTrackerPersister<Event, ProgramStage
         {
             AuditType auditType = null;
 
-            DataElement dateElement = preheat.get( DataElement.class, dv.getDataElement() );
+            DataElement dateElement = preheat.getDataElement( dv.getDataElement() );
 
             checkNotNull( dateElement,
                 "Data element should never be NULL here if validation is enforced before commit." );

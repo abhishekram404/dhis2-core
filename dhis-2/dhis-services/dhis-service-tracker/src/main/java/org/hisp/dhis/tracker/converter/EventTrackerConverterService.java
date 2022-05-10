@@ -138,7 +138,7 @@ public class EventTrackerConverterService
                 DataValue value = new DataValue();
                 value.setCreatedAt( DateUtils.instantFromDate( dataValue.getCreated() ) );
                 value.setUpdatedAt( DateUtils.instantFromDate( dataValue.getLastUpdated() ) );
-                value.setDataElement( dataValue.getDataElement() );
+                value.setDataElement( MetadataIdentifier.ofUid( dataValue.getDataElement() ) );
                 value.setValue( dataValue.getValue() );
                 value.setProvidedElsewhere( dataValue.getProvidedElsewhere() );
                 value.setStoredBy( dataValue.getStoredBy() );
@@ -190,12 +190,19 @@ public class EventTrackerConverterService
             return eventDataValues;
         }
 
-        Set<String> dataElements = event.getDataValues()
+        Set<MetadataIdentifier> dataElements = event.getDataValues()
             .stream()
             .map( DataValue::getDataElement )
             .collect( Collectors.toSet() );
         for ( EventDataValue eventDataValue : programStageInstance.getEventDataValues() )
         {
+            // TODO() what is
+            // org.hisp.dhis.eventdatavalue.EventDataValue.getDataElement()
+            // String? always a UID?
+            // we compare to data values from the payload which can be in any
+            // idScheme
+            // can we first get the DataValue out of the preheat, so we can
+            // compare using UIDs?
             if ( !dataElements.contains( eventDataValue.getDataElement() ) )
             {
                 eventDataValues.add( eventDataValue );
@@ -279,7 +286,7 @@ public class EventTrackerConverterService
             eventDataValue.setProvidedElsewhere( dataValue.isProvidedElsewhere() );
             // ensure dataElement is referred to by UID as multiple
             // dataElementIdSchemes are supported
-            DataElement dataElement = preheat.get( DataElement.class, dataValue.getDataElement() );
+            DataElement dataElement = preheat.getDataElement( dataValue.getDataElement() );
             eventDataValue.setDataElement( dataElement.getUid() );
             eventDataValue.setLastUpdatedByUserInfo( UserInfoSnapshot.from( preheat.getUser() ) );
             eventDataValue.setCreatedByUserInfo( UserInfoSnapshot.from( preheat.getUser() ) );

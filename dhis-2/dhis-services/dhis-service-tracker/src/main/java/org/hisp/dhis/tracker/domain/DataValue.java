@@ -58,8 +58,9 @@ public class DataValue
     private boolean providedElsewhere;
 
     @JsonProperty
-    @Builder.Default
-    private String dataElement = "";
+    private MetadataIdentifier dataElement; // TODO() this defaulted to "" in
+                                            // the builder, what is the impact
+                                            // of it defaulting to null now?
 
     @JsonProperty
     private String value;

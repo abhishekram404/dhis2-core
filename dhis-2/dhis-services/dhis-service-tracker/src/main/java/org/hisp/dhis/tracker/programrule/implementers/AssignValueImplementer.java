@@ -46,6 +46,7 @@ import org.hisp.dhis.tracker.domain.Attribute;
 import org.hisp.dhis.tracker.domain.DataValue;
 import org.hisp.dhis.tracker.domain.Enrollment;
 import org.hisp.dhis.tracker.domain.Event;
+import org.hisp.dhis.tracker.domain.MetadataIdentifier;
 import org.hisp.dhis.tracker.domain.TrackedEntity;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
 import org.hisp.dhis.tracker.programrule.EnrollmentActionRule;
@@ -144,7 +145,7 @@ public class AssignValueImplementer
 
     private boolean isTheSameValue( EventActionRule actionRule, TrackerPreheat preheat )
     {
-        DataElement dataElement = preheat.get( DataElement.class, actionRule.getField() );
+        DataElement dataElement = preheat.getDataElement( MetadataIdentifier.ofUid( actionRule.getField() ) );
         String dataValue = actionRule.getValue();
         Optional<DataValue> optionalDataValue = actionRule.getDataValues().stream()
             .filter( dv -> dv.getDataElement().equals( actionRule.getField() ) )
@@ -246,9 +247,9 @@ public class AssignValueImplementer
 
     private DataValue createDataValue( String dataElementUid, String newValue )
     {
-        DataValue dataValue = new DataValue();
-        dataValue.setDataElement( dataElementUid );
-        dataValue.setValue( newValue );
-        return dataValue;
+        return DataValue.builder()
+            .dataElement( MetadataIdentifier.ofUid( dataElementUid ) )
+            .value( newValue )
+            .build();
     }
 }

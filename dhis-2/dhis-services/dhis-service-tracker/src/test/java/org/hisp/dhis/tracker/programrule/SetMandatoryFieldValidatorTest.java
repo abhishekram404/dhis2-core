@@ -226,9 +226,10 @@ class SetMandatoryFieldValidatorTest extends DhisConvenienceTest
 
     private Set<DataValue> getActiveEventDataValues()
     {
-        DataValue dataValue = new DataValue();
-        dataValue.setValue( DATA_ELEMENT_VALUE );
-        dataValue.setDataElement( DATA_ELEMENT_ID );
+        DataValue dataValue = DataValue.builder()
+            .value( DATA_ELEMENT_VALUE )
+            .dataElement( MetadataIdentifier.ofUid( DATA_ELEMENT_ID ) )
+            .build();
         return Sets.newHashSet( dataValue );
     }
 

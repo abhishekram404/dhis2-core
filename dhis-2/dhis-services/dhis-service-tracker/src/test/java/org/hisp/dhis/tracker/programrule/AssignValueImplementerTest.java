@@ -155,7 +155,7 @@ class AssignValueImplementerTest extends DhisConvenienceTest
             .thenReturn( firstProgramStage );
         when( preheat.getProgramStage( MetadataIdentifier.ofUid( secondProgramStage ) ) )
             .thenReturn( secondProgramStage );
-        when( preheat.get( DataElement.class, dataElementA.getUid() ) ).thenReturn( dataElementA );
+        when( preheat.getDataElement( MetadataIdentifier.ofUid( dataElementA.getUid() ) ) ).thenReturn( dataElementA );
         when( preheat.get( TrackedEntityAttribute.class, attributeA.getUid() ) ).thenReturn( attributeA );
         bundle = TrackerBundle.builder().build();
         bundle.setPreheat( preheat );
@@ -415,17 +415,19 @@ class AssignValueImplementerTest extends DhisConvenienceTest
 
     private Set<DataValue> getEventDataValues()
     {
-        DataValue dataValue = new DataValue();
-        dataValue.setValue( DATA_ELEMENT_OLD_VALUE );
-        dataValue.setDataElement( DATA_ELEMENT_ID );
+        DataValue dataValue = DataValue.builder()
+            .value( DATA_ELEMENT_OLD_VALUE )
+            .dataElement( MetadataIdentifier.ofUid( DATA_ELEMENT_ID ) )
+            .build();
         return Sets.newHashSet( dataValue );
     }
 
     private Set<DataValue> getEventDataValuesSameValue()
     {
-        DataValue dataValue = new DataValue();
-        dataValue.setValue( DATA_ELEMENT_NEW_VALUE_PAYLOAD );
-        dataValue.setDataElement( DATA_ELEMENT_ID );
+        DataValue dataValue = DataValue.builder()
+            .value( DATA_ELEMENT_NEW_VALUE_PAYLOAD )
+            .dataElement( MetadataIdentifier.ofUid( DATA_ELEMENT_ID ) )
+            .build();
         return Sets.newHashSet( dataValue );
     }
 

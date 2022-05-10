@@ -27,8 +27,6 @@
  */
 package org.hisp.dhis.tracker.programrule.implementers;
 
-import static org.hisp.dhis.tracker.validation.hooks.ValidationUtils.validateMandatoryDataValue;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -45,6 +43,7 @@ import org.hisp.dhis.tracker.domain.Enrollment;
 import org.hisp.dhis.tracker.domain.Event;
 import org.hisp.dhis.tracker.programrule.*;
 import org.hisp.dhis.tracker.report.TrackerErrorCode;
+import org.hisp.dhis.tracker.validation.hooks.ValidationUtils;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Lists;
@@ -118,16 +117,18 @@ public class SetMandatoryFieldValidator
     {
         ProgramStage programStage = bundle.getPreheat().getProgramStage( event.getProgramStage() );
 
+        // TODO() what is this String, always a UID?
         Map<String, EventActionRule> mandatoryDataElementsByActionRule = actionRules.stream()
             .filter( eventActionRule -> eventActionRule.getAttributeType() == AttributeType.DATA_ELEMENT )
             .collect( Collectors.toMap( EventActionRule::getField, Function.identity() ) );
 
-        return validateMandatoryDataValue( programStage, event,
+        // TODO() pass in MetadataIdentifier to validateMandatoryDataValue
+        return ValidationUtils.validateMandatoryDataValueTODOremove( programStage, event,
             Lists.newArrayList( mandatoryDataElementsByActionRule.keySet() ) )
-                .stream()
-                .map( e -> new ProgramRuleIssue( mandatoryDataElementsByActionRule.get( e ).getRuleUid(),
-                    TrackerErrorCode.E1301,
-                    Lists.newArrayList( e ), IssueType.ERROR ) )
-                .collect( Collectors.toList() );
+            .stream()
+            .map( e -> new ProgramRuleIssue( mandatoryDataElementsByActionRule.get( e ).getRuleUid(),
+                TrackerErrorCode.E1301,
+                Lists.newArrayList( e ), IssueType.ERROR ) )
+            .collect( Collectors.toList() );
     }
 }

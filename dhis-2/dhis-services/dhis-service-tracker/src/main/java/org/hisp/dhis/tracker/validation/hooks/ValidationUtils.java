@@ -45,6 +45,7 @@ import org.hisp.dhis.program.ValidationStrategy;
 import org.hisp.dhis.tracker.bundle.TrackerBundle;
 import org.hisp.dhis.tracker.domain.DataValue;
 import org.hisp.dhis.tracker.domain.Event;
+import org.hisp.dhis.tracker.domain.MetadataIdentifier;
 import org.hisp.dhis.tracker.domain.Note;
 import org.hisp.dhis.tracker.domain.TrackerDto;
 import org.hisp.dhis.tracker.preheat.TrackerPreheat;
@@ -124,6 +125,33 @@ public class ValidationUtils
     }
 
     public static List<String> validateMandatoryDataValue( ProgramStage programStage,
+        Event event, List<MetadataIdentifier> mandatoryDataElements )
+    {
+        List<String> notPresentMandatoryDataElements = Lists.newArrayList();
+
+        if ( !needsToValidateDataValues( event, programStage ) )
+        {
+            return notPresentMandatoryDataElements;
+        }
+
+        Set<MetadataIdentifier> eventDataElements = event.getDataValues().stream()
+            .map( DataValue::getDataElement )
+            .collect( Collectors.toSet() );
+
+        for ( MetadataIdentifier mandatoryDataElement : mandatoryDataElements )
+        {
+            if ( !eventDataElements.contains( mandatoryDataElement ) )
+            {
+                notPresentMandatoryDataElements.add( mandatoryDataElement.getIdentifierOrAttributeValue() );
+            }
+        }
+
+        return notPresentMandatoryDataElements;
+    }
+
+    // TODO() remove this one in favor of the validateMandatoryDataValue(...,
+    // List<MetadataIdentifier>) version
+    public static List<String> validateMandatoryDataValueTODOremove( ProgramStage programStage,
         Event event, List<String> mandatoryDataElements )
     {
         List<String> notPresentMandatoryDataElements = Lists.newArrayList();
@@ -133,7 +161,7 @@ public class ValidationUtils
             return notPresentMandatoryDataElements;
         }
 
-        Set<String> eventDataElements = event.getDataValues().stream()
+        Set<MetadataIdentifier> eventDataElements = event.getDataValues().stream()
             .map( DataValue::getDataElement )
             .collect( Collectors.toSet() );
 
